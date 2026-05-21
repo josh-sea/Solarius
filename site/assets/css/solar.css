@@ -301,6 +301,44 @@ footer {
 
 footer p { margin: 0.3rem 0; }
 
+.warmth-offer {
+  margin: 2.5rem 0;
+  text-align: center;
+}
+
+.warmth-btn {
+  display: inline-block;
+  background: var(--sun-1);
+  color: #1a0f00;
+  padding: 0.75rem 2rem;
+  border-radius: 3px;
+  font-weight: 600;
+  font-size: 1.05rem;
+  letter-spacing: 0.03em;
+  border: none;
+  text-decoration: none;
+  transition: background 0.2s;
+}
+
+.warmth-btn:hover {
+  background: var(--sun-3);
+  color: #1a0f00;
+  border: none;
+}
+
+.warmth-note {
+  margin-top: 0.75rem;
+  font-size: 0.88rem;
+  color: var(--ink-3);
+  font-style: italic;
+}
+
+.warmth-footer-link {
+  color: var(--sun-1);
+  font-size: 0.85rem;
+  letter-spacing: 0.04em;
+}
+
 @media (max-width: 720px) {
   body { font-size: 17px; }
   .masthead { grid-template-columns: 1fr; gap: 0.75rem; }
