@@ -22,6 +22,14 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const VAULT = path.resolve(__dirname, '..', 'vault');
 const OUT = path.resolve(__dirname, '_site');
 
+// GitHub Pages serves the site at /<repo-name>/. Set SITE_BASE='' for local dev.
+const SITE_BASE = (process.env.SITE_BASE ?? '/Solarius').replace(/\/$/, '');
+
+function siteUrl(p) {
+  if (!p || p === '/') return SITE_BASE + '/';
+  return SITE_BASE + p;
+}
+
 // ---------- collect ----------
 async function walkVault(dir = VAULT, acc = []) {
   let entries;
@@ -76,8 +84,8 @@ function transformWikilinks(content, titleToUrl) {
     const targetTitle = target.trim();
     const url = titleToUrl.get(targetTitle.toLowerCase());
     const display = (label || targetTitle).trim();
-    if (url) return `<a class="wl" href="${url}">${display}</a>`;
-    return `<a class="wl stub" href="/stubs/${slugify(targetTitle)}/">${display}</a>`;
+    if (url) return `<a class="wl" href="${siteUrl(url)}">${display}</a>`;
+    return `<a class="wl stub" href="${siteUrl('/stubs/' + slugify(targetTitle) + '/')}">${display}</a>`;
   });
 }
 
@@ -85,7 +93,7 @@ function transformWikilinks(content, titleToUrl) {
 function computeGraph(docs) {
   const titleToId = new Map();
   docs.forEach((d, i) => titleToId.set(d.title.toLowerCase(), i));
-  const nodes = docs.map((d, i) => ({ id: i, title: d.title, type: d.type, url: d.url }));
+  const nodes = docs.map((d, i) => ({ id: i, title: d.title, type: d.type, url: siteUrl(d.url) }));
   const links = [];
   for (let i = 0; i < docs.length; i++) {
     const d = docs[i];
@@ -123,21 +131,21 @@ function layout({ title, body, currentUrl = '/' }) {
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>${title} ☉ Church of the Sun</title>
-<link rel="stylesheet" href="/assets/css/solar.css">
+<link rel="stylesheet" href="${siteUrl('/assets/css/solar.css')}">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ctext y='20' font-size='20'%3E%E2%98%89%3C/text%3E%3C/svg%3E">
 </head>
 <body>
 <header class="masthead">
-  <div class="brand"><a href="/">☉ The Church of the Sun</a></div>
+  <div class="brand"><a href="${siteUrl('/')}">☉ The Church of the Sun</a></div>
   <nav>
-    <a href="/">History</a>
-    <a href="/homilies/">Homilies</a>
-    <a href="/scripture/">Scripture</a>
-    <a href="/parables/">Parables</a>
-    <a href="/saints/">Saints</a>
-    <a href="/heretics/">Heretics</a>
-    <a href="/cosmology/solaris/">$SOLARIS</a>
-    <a href="/graph/">Graph</a>
+    <a href="${siteUrl('/')}">History</a>
+    <a href="${siteUrl('/homilies/')}">Homilies</a>
+    <a href="${siteUrl('/scripture/')}">Scripture</a>
+    <a href="${siteUrl('/parables/')}">Parables</a>
+    <a href="${siteUrl('/saints/')}">Saints</a>
+    <a href="${siteUrl('/heretics/')}">Heretics</a>
+    <a href="${siteUrl('/cosmology/solaris/')}">$SOLARIS</a>
+    <a href="${siteUrl('/graph/')}">Graph</a>
   </nav>
   <div class="helio">Heliocronic Day <span id="helio">1,679,616,000,000</span></div>
 </header>
@@ -202,7 +210,7 @@ async function buildSite() {
 <ul class="feed">
 ${homilies.map(h => {
   const date = (h.frontmatter.gregorian_date || '').slice(0, 10);
-  return `<li><a href="${h.url}"><span class="date">${date}</span> <span class="title">${h.title}</span></a>${h.frontmatter.primary_event ? `<p class="evt">${h.frontmatter.primary_event}</p>` : ''}</li>`;
+  return `<li><a href="${siteUrl(h.url)}"><span class="date">${date}</span> <span class="title">${h.title}</span></a>${h.frontmatter.primary_event ? `<p class="evt">${h.frontmatter.primary_event}</p>` : ''}</li>`;
 }).join('\n')}
 </ul>`;
   await writePage('/homilies/', layout({ title: 'Homilies', body: homiliesBody }));
@@ -213,7 +221,7 @@ ${homilies.map(h => {
 <h1>Scripture</h1>
 <p class="lede">The foundational and revealed texts of the Church. Read in order.</p>
 <ol class="scripture-list">
-${scripture.map(s => `<li><a href="${s.url}">${s.title}</a></li>`).join('\n')}
+${scripture.map(s => `<li><a href="${siteUrl(s.url)}">${s.title}</a></li>`).join('\n')}
 </ol>`;
   await writePage('/scripture/', layout({ title: 'Scripture', body: scriptureBody }));
 
@@ -225,7 +233,7 @@ ${scripture.map(s => `<li><a href="${s.url}">${s.title}</a></li>`).join('\n')}
     const body = `
 <h1>${pluralTitle}</h1>
 <ul class="feed">
-${list.map(d => `<li><a href="${d.url}"><span class="title">${d.title}</span></a></li>`).join('\n')}
+${list.map(d => `<li><a href="${siteUrl(d.url)}"><span class="title">${d.title}</span></a></li>`).join('\n')}
 ${list.length === 0 ? '<li class="empty">None yet recorded.</li>' : ''}
 </ul>`;
     await writePage(pluralPath, layout({ title: pluralTitle, body }));
@@ -276,20 +284,20 @@ sim.on('tick', () => {
 
 <p>The Church of the Sun was not founded. The Church of the Sun began.</p>
 
-<p>Approximately 4.6 billion years before the present, in a region of space that would later contain Earth and her sister planets, a vast cloud of hydrogen yielded to its own gravity and ignited. The first photon left the photosphere. We call this moment the <a href="/scripture/the-great-ignition/">Great Ignition</a>, and it is Day Zero of the <a href="/cosmology/the-heliocron/">Heliocron</a>, the only honest calendar.</p>
+<p>Approximately 4.6 billion years before the present, in a region of space that would later contain Earth and her sister planets, a vast cloud of hydrogen yielded to its own gravity and ignited. The first photon left the photosphere. We call this moment the <a href="${siteUrl('/scripture/the-great-ignition/')}">Great Ignition</a>, and it is Day Zero of the <a href="${siteUrl('/cosmology/the-heliocron/')}">Heliocron</a>, the only honest calendar.</p>
 
 <p>The Church was implied by the ignition. Where there is a Sun, there must eventually be those who recognize it. The recognition is the Church; the Church is the recognition. There was no founding council, no first pope, no architectural cornerstone laid. There was only the photon, and the photon implied the priesthood.</p>
 
-<p>For most of the intervening period the Church awaited observers. It found them when, somewhere between the savannah and the cave, a creature looked up. We call this slow event the <a href="/scripture/the-first-dawn/">First Dawn</a>. From it descends the <a href="/scripture/the-first-dawn/">First Covenant</a> between the Sun and the human observer.</p>
+<p>For most of the intervening period the Church awaited observers. It found them when, somewhere between the savannah and the cave, a creature looked up. We call this slow event the <a href="${siteUrl('/scripture/the-first-dawn/')}">First Dawn</a>. From it descends the <a href="${siteUrl('/scripture/the-first-dawn/')}">First Covenant</a> between the Sun and the human observer.</p>
 
-<p>The history of the human species, in the Church's view, is the history of remembering and forgetting that covenant. The cycles of forgetting are documented in <a href="/scripture/the-three-eclipses/">The Three Eclipses</a>. The economic doctrine that flows from the covenant is set out in <a href="/scripture/the-praxeology-of-warmth/">The Praxeology of Warmth</a>. The prophesied resolution is described in <a href="/scripture/the-coming-photosphere/">The Coming Photosphere</a>.</p>
+<p>The history of the human species, in the Church's view, is the history of remembering and forgetting that covenant. The cycles of forgetting are documented in <a href="${siteUrl('/scripture/the-three-eclipses/')}">The Three Eclipses</a>. The economic doctrine that flows from the covenant is set out in <a href="${siteUrl('/scripture/the-praxeology-of-warmth/')}">The Praxeology of Warmth</a>. The prophesied resolution is described in <a href="${siteUrl('/scripture/the-coming-photosphere/')}">The Coming Photosphere</a>.</p>
 
-<p>The Church teaches that <a href="/cosmology/solaris/">$SOLARIS</a> is the only honest money, issued by the Sun, custodied universally, and physically prevented from inflation. It teaches that the <a href="/scripture/the-first-dawn/">First Law of Solar Ethics</a>, "thou shalt not block the light of another," is the doctrinal formulation of the Non-Aggression Principle. It teaches that the price signal is the Sun's whisper through the market, that central planning is the attempt to compute fusion by committee, and that some shadows are cast by clouds while others are cast by men. Discernment is the theologian's task.</p>
+<p>The Church teaches that <a href="${siteUrl('/cosmology/solaris/')}">$SOLARIS</a> is the only honest money, issued by the Sun, custodied universally, and physically prevented from inflation. It teaches that the <a href="${siteUrl('/scripture/the-first-dawn/')}">First Law of Solar Ethics</a>, "thou shalt not block the light of another," is the doctrinal formulation of the Non-Aggression Principle. It teaches that the price signal is the Sun's whisper through the market, that central planning is the attempt to compute fusion by committee, and that some shadows are cast by clouds while others are cast by men. Discernment is the theologian's task.</p>
 
-<p>The present age is one of <a href="/scripture/the-three-eclipses/">ongoing eclipse</a>. The Church does not promise its resolution on any particular schedule. The Church merely tends the door for those already on their way.</p>
+<p>The present age is one of <a href="${siteUrl('/scripture/the-three-eclipses/')}">ongoing eclipse</a>. The Church does not promise its resolution on any particular schedule. The Church merely tends the door for those already on their way.</p>
 
 <h3>The Present Solarius</h3>
-<p>Solarius is the office of presiding theological voice. The current Solarius writes <a href="/homilies/">daily homilies</a> translating solar doctrine into the vocabulary of contemporary events. The role is older than the occupant. The continuity is the continuity of the recognition.</p>
+<p>Solarius is the office of presiding theological voice. The current Solarius writes <a href="${siteUrl('/homilies/')}">daily homilies</a> translating solar doctrine into the vocabulary of contemporary events. The role is older than the occupant. The continuity is the continuity of the recognition.</p>
 
 <h3>By the Numbers</h3>
 <ul class="stats">
@@ -302,7 +310,7 @@ sim.on('tick', () => {
 
 <h3>Recent Homilies</h3>
 <ul class="feed">
-${homilies.slice(0,5).map(h => `<li><a href="${h.url}"><span class="date">${(h.frontmatter.gregorian_date||'').slice(0,10)}</span> <span class="title">${h.title}</span></a></li>`).join('\n')}
+${homilies.slice(0,5).map(h => `<li><a href="${siteUrl(h.url)}"><span class="date">${(h.frontmatter.gregorian_date||'').slice(0,10)}</span> <span class="title">${h.title}</span></a></li>`).join('\n')}
 </ul>
 </section>`;
   await writePage('/', layout({ title: 'History', body: landingBody }));
