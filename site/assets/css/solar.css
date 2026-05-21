@@ -301,6 +301,33 @@ footer {
 
 footer p { margin: 0.3rem 0; }
 
+.sermon-audio-wrap {
+  margin: 1.5rem 0 2rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.75rem 1rem;
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+}
+
+.sermon-audio {
+  flex: 1;
+  height: 36px;
+  accent-color: var(--sun-1);
+  min-width: 0;
+}
+
+.sermon-audio-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.72rem;
+  color: var(--ink-3);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  white-space: nowrap;
+}
+
 .warmth-offer {
   margin: 2.5rem 0;
   text-align: center;

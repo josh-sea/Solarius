@@ -186,11 +186,28 @@ async function buildSite() {
   const docs = await parseAllDocs();
   const titleToUrl = new Map(docs.map(d => [d.title.toLowerCase(), d.url]));
 
+  // Detect which pages have audio narration available.
+  const audioDir = path.resolve(__dirname, 'audio');
+  const audioSlugs = new Set();
+  try {
+    for (const f of await fs.readdir(audioDir)) {
+      if (f.endsWith('.mp3')) audioSlugs.add(f.slice(0, -4));
+    }
+  } catch {}
+  console.log(`[build] ${audioSlugs.size} audio file(s) found`);
+
   // CSS
   const cssSrc = path.resolve(__dirname, 'assets', 'css', 'solar.css');
   const cssDest = path.join(OUT, 'assets', 'css', 'solar.css');
   await fs.mkdir(path.dirname(cssDest), { recursive: true });
   await fs.copyFile(cssSrc, cssDest);
+
+  // Copy audio files to _site/audio/
+  const audioDest = path.join(OUT, 'audio');
+  await fs.mkdir(audioDest, { recursive: true });
+  for (const slug of audioSlugs) {
+    await fs.copyFile(path.join(audioDir, `${slug}.mp3`), path.join(audioDest, `${slug}.mp3`));
+  }
 
   // Per-doc pages
   for (const d of docs) {
@@ -198,6 +215,15 @@ async function buildSite() {
     const html = marked.parse(transformed);
     const date = d.frontmatter.gregorian_date || d.frontmatter.revealed || '';
     const heliocron = d.frontmatter.heliocron_day;
+    const docSlug = slugify(d.title);
+    const audioPlayer = audioSlugs.has(docSlug)
+      ? `<div class="sermon-audio-wrap">
+  <audio controls preload="none" class="sermon-audio">
+    <source src="${siteUrl('/audio/' + docSlug + '.mp3')}" type="audio/mpeg">
+  </audio>
+  <span class="sermon-audio-label">Read by Solarius</span>
+</div>`
+      : '';
     const body = `
 <article class="doc">
   <div class="docmeta">
@@ -206,6 +232,7 @@ async function buildSite() {
     ${date ? `<span class="date">${typeof date === 'string' ? date.slice(0, 10) : ''}</span>` : ''}
   </div>
   <h1>${d.title}</h1>
+  ${audioPlayer}
   ${html}
 </article>`;
     await writePage(d.url, layout({ title: d.title, body, currentUrl: d.url }));
