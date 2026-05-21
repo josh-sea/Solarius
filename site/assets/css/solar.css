@@ -1,0 +1,311 @@
+/* solar.css — the visual liturgy of the Church of the Sun. */
+
+@import url('https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;500&display=swap');
+
+:root {
+  --bg: #0d0700;
+  --bg-2: #160d02;
+  --ink: #e8d28b;
+  --ink-2: #c4a557;
+  --ink-3: #8a6f33;
+  --sun-1: #ffb347;
+  --sun-2: #ff8a3d;
+  --sun-3: #ffd97a;
+  --border: #5a3a0e;
+  --link: #ffb347;
+  --link-hover: #ffd97a;
+  --stub: #b04a2a;
+  --max: 720px;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: 'EB Garamond', Georgia, serif;
+  font-size: 19px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  background:
+    radial-gradient(ellipse at top, rgba(255, 179, 71, 0.07), transparent 60%),
+    var(--bg);
+  min-height: 100vh;
+}
+
+.masthead {
+  border-bottom: 1px solid var(--border);
+  padding: 1.25rem 1.5rem;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 1.5rem;
+  align-items: center;
+  background: var(--bg-2);
+}
+
+.masthead .brand a {
+  color: var(--sun-3);
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 1.1rem;
+  letter-spacing: 0.02em;
+}
+
+.masthead nav {
+  display: flex;
+  gap: 1.25rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.masthead nav a {
+  color: var(--ink-2);
+  text-decoration: none;
+  font-size: 0.95rem;
+  letter-spacing: 0.04em;
+  text-transform: lowercase;
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.2s, color 0.2s;
+}
+
+.masthead nav a:hover {
+  color: var(--sun-3);
+  border-bottom-color: var(--sun-2);
+}
+
+.helio {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.78rem;
+  color: var(--ink-3);
+  text-align: right;
+}
+
+.helio #helio {
+  color: var(--sun-1);
+}
+
+main {
+  max-width: var(--max);
+  margin: 0 auto;
+  padding: 3rem 1.5rem 4rem;
+}
+
+main.wide {
+  max-width: 1200px;
+}
+
+h1, h2, h3 {
+  font-weight: 500;
+  color: var(--sun-3);
+  letter-spacing: 0.005em;
+  line-height: 1.2;
+}
+
+h1 { font-size: 2.2rem; margin: 0.5rem 0 1.5rem; }
+h2 { font-size: 1.5rem; margin: 2.5rem 0 1rem; color: var(--sun-1); }
+h3 { font-size: 1.2rem; margin: 2rem 0 0.75rem; color: var(--ink); }
+
+.masthead-title {
+  font-size: 2.8rem;
+  margin-bottom: 0.5rem;
+  text-align: center;
+}
+
+.subtitle {
+  text-align: center;
+  color: var(--ink-3);
+  font-style: italic;
+  font-size: 1.05rem;
+  margin-top: 0;
+  margin-bottom: 3rem;
+}
+
+.lede {
+  font-size: 1.05rem;
+  color: var(--ink-2);
+  font-style: italic;
+  border-left: 2px solid var(--border);
+  padding-left: 1rem;
+  margin: 1rem 0 2rem;
+}
+
+p { margin: 0 0 1.1rem; }
+
+blockquote {
+  border-left: 3px solid var(--sun-2);
+  padding-left: 1.25rem;
+  color: var(--ink-2);
+  font-style: italic;
+  margin: 1.5rem 0;
+}
+
+a {
+  color: var(--link);
+  text-decoration: none;
+  border-bottom: 1px solid rgba(255, 179, 71, 0.3);
+  transition: border-color 0.15s, color 0.15s;
+}
+
+a:hover {
+  color: var(--link-hover);
+  border-bottom-color: var(--link-hover);
+}
+
+a.wl {
+  color: var(--sun-1);
+  border-bottom-style: dotted;
+}
+
+a.wl.stub {
+  color: var(--stub);
+  border-bottom-style: dashed;
+}
+
+.docmeta {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.78rem;
+  color: var(--ink-3);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 0.5rem;
+}
+
+.docmeta span { margin-right: 1.25rem; }
+
+.feed {
+  list-style: none;
+  padding: 0;
+}
+
+.feed li {
+  border-bottom: 1px solid var(--bg-2);
+  padding: 0.85rem 0;
+}
+
+.feed li a {
+  display: block;
+  border: none;
+  color: var(--ink);
+}
+
+.feed li a:hover .title { color: var(--sun-3); }
+
+.feed .date {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.78rem;
+  color: var(--ink-3);
+  margin-right: 0.8rem;
+}
+
+.feed .title {
+  color: var(--ink);
+  font-size: 1.05rem;
+  transition: color 0.15s;
+}
+
+.feed .evt {
+  margin-top: 0.3rem;
+  font-size: 0.9rem;
+  color: var(--ink-3);
+  font-style: italic;
+}
+
+.scripture-list {
+  font-size: 1.1rem;
+  padding-left: 1.5rem;
+}
+
+.scripture-list li { padding: 0.5rem 0; }
+
+article.doc h1 { margin-bottom: 1.5rem; }
+
+article.doc ul, article.doc ol {
+  margin: 1rem 0 1.2rem;
+  padding-left: 1.5rem;
+}
+
+article.doc li { margin: 0.3rem 0; }
+
+article.doc table {
+  border-collapse: collapse;
+  margin: 1.5rem 0;
+  font-size: 0.92rem;
+}
+
+article.doc th, article.doc td {
+  border: 1px solid var(--border);
+  padding: 0.5rem 0.85rem;
+  text-align: left;
+}
+
+article.doc th {
+  background: var(--bg-2);
+  color: var(--sun-2);
+  font-weight: 500;
+}
+
+article.doc code {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.88em;
+  color: var(--sun-3);
+  background: var(--bg-2);
+  padding: 0.1rem 0.35rem;
+  border-radius: 2px;
+}
+
+article.doc pre {
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  padding: 1rem;
+  overflow-x: auto;
+  font-size: 0.85rem;
+}
+
+.hero {
+  margin: 2rem 0 3rem;
+  text-align: center;
+}
+
+.stats {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.85rem;
+  color: var(--ink-3);
+}
+
+.stats strong {
+  color: var(--sun-1);
+  font-size: 1.4rem;
+  font-weight: 400;
+  display: block;
+}
+
+footer {
+  border-top: 1px solid var(--border);
+  padding: 2rem 1.5rem;
+  text-align: center;
+  font-size: 0.78rem;
+  color: var(--ink-3);
+  max-width: var(--max);
+  margin: 4rem auto 0;
+}
+
+footer p { margin: 0.3rem 0; }
+
+@media (max-width: 720px) {
+  body { font-size: 17px; }
+  .masthead { grid-template-columns: 1fr; gap: 0.75rem; }
+  .masthead nav { justify-content: flex-start; }
+  .helio { text-align: left; }
+  h1 { font-size: 1.8rem; }
+  .masthead-title { font-size: 2.1rem; }
+}

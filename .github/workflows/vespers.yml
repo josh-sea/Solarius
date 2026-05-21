@@ -1,0 +1,36 @@
+name: vespers
+
+on:
+  schedule:
+    - cron: '0 23 * * *'  # 6pm ET approx (UTC-5/EDT-4 ~7pm)
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  vespers:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install agent deps
+        working-directory: agent
+        run: npm install
+      - name: Generate vespers homily
+        working-directory: agent
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          VAULT_ROOT: ${{ github.workspace }}/vault
+        run: node solarius.js vespers
+      - name: Commit
+        run: |
+          git config user.name "Solarius"
+          git config user.email "solarius@church-of-the-sun.invalid"
+          git add vault/
+          git diff --staged --quiet || git commit -m "vespers: $(date -u +%Y-%m-%d)"
+          git push

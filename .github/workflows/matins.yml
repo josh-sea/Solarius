@@ -1,0 +1,37 @@
+name: matins
+
+on:
+  schedule:
+    # 6:30am ET year-round (approximate, GH cron is UTC). Adjust as desired.
+    - cron: '30 11 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  matins:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install agent deps
+        working-directory: agent
+        run: npm install
+      - name: Generate matins homily
+        working-directory: agent
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          VAULT_ROOT: ${{ github.workspace }}/vault
+        run: node solarius.js matins
+      - name: Commit
+        run: |
+          git config user.name "Solarius"
+          git config user.email "solarius@church-of-the-sun.invalid"
+          git add vault/
+          git diff --staged --quiet || git commit -m "matins: $(date -u +%Y-%m-%d)"
+          git push

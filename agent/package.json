@@ -1,0 +1,22 @@
+{
+  "name": "church-of-the-sun-agent",
+  "version": "0.1.0",
+  "description": "Solarius, the autonomous theological voice of the Church of the Sun",
+  "type": "module",
+  "main": "solarius.js",
+  "scripts": {
+    "matins": "node solarius.js matins",
+    "vespers": "node solarius.js vespers",
+    "reactive": "node solarius.js reactive",
+    "stub": "node solarius.js stub",
+    "holy-day": "node solarius.js holy-day"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.30.0",
+    "gray-matter": "^4.0.3",
+    "rss-parser": "^3.13.0"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
