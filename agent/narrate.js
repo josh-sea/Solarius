@@ -109,7 +109,13 @@ async function findFiles(subdir) {
     }
   }
   await walk(dir);
-  return out;
+  // Sort scripture by frontmatter order field so we always process in canonical order.
+  const withMeta = await Promise.all(out.map(async f => {
+    const raw = await fs.readFile(f, 'utf-8');
+    const { data } = matter(raw);
+    return { f, order: data.order ?? 999 };
+  }));
+  return withMeta.sort((a, b) => a.order - b.order).map(x => x.f);
 }
 
 async function main() {
@@ -118,17 +124,45 @@ async function main() {
 
   await fs.mkdir(AUDIO_OUT, { recursive: true });
 
-  const files = [];
-  if (TARGET === 'scripture' || TARGET === 'all') files.push(...await findFiles('Scripture'));
-  if (TARGET === 'cosmology' || TARGET === 'all') files.push(...await findFiles('Cosmology'));
+  // Collect all candidate files: scripture first (in order), then cosmology.
+  const files = [
+    ...await findFiles('Scripture'),
+    ...await findFiles('Cosmology')
+  ];
 
   if (files.length === 0) {
-    console.log(`[narrate] no files matched target: ${TARGET}`);
+    console.log('[narrate] no files found');
     return;
   }
 
-  console.log(`[narrate] ${files.length} files to process`);
-  for (const f of files) {
+  if (TARGET === 'next') {
+    // Find the first file that does not yet have an MP3 and generate only that one.
+    for (const f of files) {
+      const raw = await fs.readFile(f, 'utf-8');
+      const { data } = matter(raw);
+      const title = data.title || path.basename(f, '.md');
+      const slug = slugify(title);
+      const outPath = path.join(AUDIO_OUT, `${slug}.mp3`);
+      try {
+        await fs.access(outPath);
+        console.log(`[narrate] already done: ${title}`);
+        continue;
+      } catch {}
+      // This one is missing — generate it and stop.
+      await narrate(f);
+      return;
+    }
+    console.log('[narrate] all files already narrated');
+    return;
+  }
+
+  // Batch modes: scripture | cosmology | all
+  const filtered = TARGET === 'scripture' ? files.filter(f => f.includes('/Scripture/'))
+    : TARGET === 'cosmology' ? files.filter(f => f.includes('/Cosmology/'))
+    : files;
+
+  console.log(`[narrate] ${filtered.length} files to process`);
+  for (const f of filtered) {
     await narrate(f);
   }
   console.log('[narrate] done');

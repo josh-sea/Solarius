@@ -4,11 +4,12 @@ on:
   workflow_dispatch:
     inputs:
       target:
-        description: 'What to narrate: scripture | cosmology | all'
+        description: 'next = one file at a time (recommended); or batch a whole section'
         required: true
-        default: 'scripture'
+        default: 'next'
         type: choice
         options:
+          - next
           - scripture
           - cosmology
           - all
