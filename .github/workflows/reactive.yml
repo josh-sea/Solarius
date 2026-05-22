@@ -1,9 +1,9 @@
 name: reactive
 
 on:
-  schedule:
-    - cron: '7 */2 * * *'  # every 2 hours, offset to avoid the hour
   workflow_dispatch:
+    # Reactive is available for manual runs on breaking events only.
+    # Scheduling disabled to control costs.
 
 permissions:
   contents: write

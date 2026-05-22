@@ -1,9 +1,9 @@
 name: vespers
 
 on:
-  schedule:
-    - cron: '0 23 * * *'  # 6pm ET approx (UTC-5/EDT-4 ~7pm)
   workflow_dispatch:
+    # Vespers is available for manual runs only.
+    # The daily homily runs via matins at 8am ET.
 
 permissions:
   contents: write

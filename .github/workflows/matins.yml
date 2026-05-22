@@ -2,8 +2,8 @@ name: matins
 
 on:
   schedule:
-    # 6:30am ET year-round (approximate, GH cron is UTC). Adjust as desired.
-    - cron: '30 11 * * *'
+    # 8am ET: noon UTC (8am EDT, 7am EST — close enough year-round)
+    - cron: '0 12 * * *'
   workflow_dispatch:
 
 permissions:
