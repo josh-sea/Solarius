@@ -2,7 +2,7 @@ name: deploy-pages
 
 on:
   push:
-    branches: [main]
+    branches: [main, claude/setup-solarius-agent-QXBWe]
     paths:
       - 'vault/**'
       - 'site/**'
