@@ -1,10 +1,10 @@
 name: matins
 
 on:
-  schedule:
-    # 8am ET: noon UTC (8am EDT, 7am EST — close enough year-round)
-    - cron: '0 12 * * *'
   workflow_dispatch:
+    # Paused. To re-enable daily schedule, restore:
+    # schedule:
+    #   - cron: '0 12 * * *'
 
 permissions:
   contents: write
